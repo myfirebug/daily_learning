@@ -37,3 +37,34 @@ module: {
   },
 ...
 ```
+
+## 处理 less
+
+[less-loader 官方文档](https://webpack.docschina.org/loaders/less-loader/)
+
+### 1. 下载包
+
+```
+npm i less less-loader -D
+```
+
+### 2. 功能介绍
+
+- less-loader: 负责将 less 文件编译成 css 文件；
+
+### 3. 配置
+
+```
+...
+module: {
+    rules: [
+      // 处理less
+      {
+        test: /\.less$/i,
+        // use 执行顺序：从右到左，从下到上
+        use: ["style-loader", "css-loader", "less-loader"],
+      },
+    ],
+  },
+...
+```

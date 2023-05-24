@@ -19,6 +19,11 @@ module.exports = {
         // use 执行顺序：从右到左，从下到上
         use: ["style-loader", "css-loader"],
       },
+      // 加载less
+      {
+        test: /\.less$/i,
+        use: ["style-loader", "css-loader", "less-loader"],
+      },
     ],
   },
   // 插件
