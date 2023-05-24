@@ -1,4 +1,4 @@
-# webpack 大核心概念
+# webpack 核心概念
 
 - entry(入口)：指 webpack 从哪个文件开始打包；
 - output(输出)：指 webpack 打包完的文件输出到哪里去，如何命令等；
