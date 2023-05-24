@@ -68,3 +68,35 @@ module: {
   },
 ...
 ```
+
+## 处理 sass 和 scss
+
+[sass-loader 官方文档](https://webpack.docschina.org/loaders/sass-loader/)
+
+### 1. 下载包
+
+```
+npm i sass-loader sass -D
+```
+
+### 2. 功能介绍
+
+- sass-loader: 负责将 sass 文件编译成 css 文件；
+- sass: sass-loader 依赖 sass 进行编译；
+
+### 3. 配置
+
+```
+...
+module: {
+    rules: [
+      // 处理less
+      {
+        test: /\.s[ac]ss$/i,
+        // use 执行顺序：从右到左，从下到上
+        use: ["style-loader", "css-loader", "sass-loader"],
+      },
+    ],
+  },
+...
+```
