@@ -90,11 +90,42 @@ npm i sass-loader sass -D
 ...
 module: {
     rules: [
-      // 处理less
+      // 处理sass
       {
         test: /\.s[ac]ss$/i,
         // use 执行顺序：从右到左，从下到上
         use: ["style-loader", "css-loader", "sass-loader"],
+      },
+    ],
+  },
+...
+```
+
+## 处理 styl 资源
+
+[stylus-loader 官方文档](https://webpack.docschina.org/loaders/stylus-loader/)
+
+### 1. 下载包
+
+```
+npm i stylus stylus-loader -D
+```
+
+### 2. 功能介绍
+
+- stylus-loader: 负责将 styl 文件编译成 css 文件；
+
+### 3. 配置
+
+```
+...
+module: {
+    rules: [
+      // 处理stylus
+      {
+        test: /\.s[ac]ss$/i,
+        // use 执行顺序：从右到左，从下到上
+        use: ["style-loader", "css-loader", "stylus-loader"],
       },
     ],
   },
