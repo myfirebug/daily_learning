@@ -7,3 +7,4 @@
 - [处理 JS 资源](./day005/README.md)
 - [处理 HTML 资源](./day006/README.md)
 - [开发服务器&自动化](./day007/README.md)
+- [提取样式，样式兼容性，压缩样式](./day008/README.md)
