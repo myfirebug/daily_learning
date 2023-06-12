@@ -3,11 +3,11 @@
 ## SourceMap
 
 开发时我们运行的代码是经过 webpack 编译后的,如下：
-[图片](https://myfirebug.github.io/example-images/webpack/1.png)
+![图片](https://myfirebug.github.io/example-images/webpack/1.png)
 
 所有 css 和 js 合并成一个文件，并且多了其他代码。此时如果代码运行报错那么提示代码错误位置我们是看不懂的，一旦将来开发代码文件很多，很难发现错误出现的在哪里；
-[图片](https://myfirebug.github.io/example-images/webpack/2.png)
-[图片](https://myfirebug.github.io/example-images/webpack/3.png)
+![图片](https://myfirebug.github.io/example-images/webpack/2.png)
+![图片](https://myfirebug.github.io/example-images/webpack/3.png)
 
 所以我们需要更加准确的的错误提示，来帮助我们更好的开发代码；
 
@@ -45,5 +45,5 @@ devtool: 'source-map'
 
 ### 结果
 
-[图片](https://myfirebug.github.io/example-images/webpack/4.png)
-[图片](https://myfirebug.github.io/example-images/webpack/5.png)
+![图片](https://myfirebug.github.io/example-images/webpack/4.png)
+![图片](https://myfirebug.github.io/example-images/webpack/5.png)
