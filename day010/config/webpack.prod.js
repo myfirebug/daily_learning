@@ -1,3 +1,6 @@
+const os = require("os");
+// 压缩js
+const terserWebpackPlugin = require("terser-webpack-plugin");
 const ESLintPlugin = require("eslint-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -6,6 +9,9 @@ const path = require("path");
 const { tools } = require("./utils");
 const assetPath = "../";
 const { getStyleLoader } = tools;
+// cpu核数
+const threads = os.cpus().length;
+console.log(threads, "threads");
 
 module.exports = {
   // 入口相对路由
@@ -64,13 +70,21 @@ module.exports = {
           {
             test: /\.js$/,
             exclude: /node_modules/, // 排除node_modules中的js文件
-            use: {
-              loader: "babel-loader",
-              options: {
-                cacheDirectory: true, // 开启babel缓存
-                cacheCompression: false, // 关闭缓存文件压缩
+            use: [
+              {
+                loader: "thread-loader",
+                options: {
+                  works: threads, // 进程数据
+                },
               },
-            },
+              {
+                loader: "babel-loader",
+                options: {
+                  cacheDirectory: true, // 开启babel缓存
+                  cacheCompression: false, // 关闭缓存文件压缩
+                },
+              },
+            ],
           },
         ],
       },
@@ -78,9 +92,12 @@ module.exports = {
   },
   optimization: {
     minimizer: [
-      // 在 webpack@5 中，你可以使用 `...` 语法来扩展现有的 minimizer（即 `terser-webpack-plugin`），将下一行取消注释
-      // `...`,
+      // 压缩css
       new CssMinimizerPlugin(),
+      // 压缩js
+      new terserWebpackPlugin({
+        parallel: threads, // 开启多进程
+      }),
     ],
   },
   // 插件
@@ -89,6 +106,7 @@ module.exports = {
       exclude: "node_modules",
       context: path.resolve(__dirname, assetPath + "src"),
       cache: true,
+      threads, // 开启多进程
     }),
     new HtmlWebpackPlugin({
       // 模板：以public/index.html文件创建新的html文件
@@ -98,7 +116,7 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: "static/css/main.css",
     }),
-    new MiniCssExtractPlugin(),
+    // new MiniCssExtractPlugin()
   ],
   // 模式
   mode: "production",

@@ -109,6 +109,8 @@ module: {
 每次打包 js 文件都要经验丰富 eslint 检查和 babel 编译，速度慢；
 我们可以缓存之前的 eslint（默认有缓存） 检查和 babel 编译结果，这样第二次打包时速度就会更快；；
 
+### 配置
+
 ```
 ...
 {
@@ -124,4 +126,80 @@ module: {
 }
 ...
 // 默认打包到 node_modules/.cache 文件夹中
+```
+
+## Thead(多进程打包)
+
+当项目越来越庞大时，打包速度会变得非常慢。
+我们想要继续提升打包速度，其实就是要提升 js 的打包速度，因为其他文件都比较少。
+而对 js 文件处理主要就是 eslint、babel、Terser 三个工具，所以我们要提升它们的运行速度。
+我闪呆以开启多进程同时处理 js 文件，这样速度就比之前的单进程打包更快了。
+
+### 介绍
+
+多进程打包：开启电脑的多个进程同时干一件事情，速度更快；
+注意：请仅在特别耗时的操作中使用，因为每个进程启动就大约为 600ms 左右开销；
+
+### 配置
+
+我们启动进程的数量就是我们 CPU 的核数；
+
+1. 如何获取 CPU 核数，因为 每个电脑都不一样
+
+```
+// nodejs核心模块，直接使用
+const os = require("os");
+// cpu核数
+const threads = os.cpus().length
+```
+
+2. 下载包
+
+```
+npm i thread-loader -D
+```
+
+```
+const os = require("os");
+// 压缩js
+const terserWebpackPlugin = require("terser-webpack-plugin");
+// cpu核数
+const threads = os.cpus().length;
+...
+module: {
+  rules: [
+    ...,
+    {
+      test: /\.js$/,
+      exclude: /node_modules/, // 排除node_modules中的js文件
+      use: [
+        {
+        loader: "thread-loader",
+        options: {
+          works: threads, // 进程数据
+          },
+        },
+        {
+          loader: "babel-loader",
+            options: {
+              cacheDirectory: true, // 开启babel缓存
+              cacheCompression: false, // 关闭缓存文件压缩
+            },
+        },
+      ],
+    }
+  ]
+},
+plugins: [
+    new ESLintPlugin({
+      exclude: "node_modules",
+      context: path.resolve(__dirname, assetPath + "src"),
+      cache: true,
+      threads, // 开启多进程
+    }),
+    new terserWebpackPlugin({
+      parallel: threads, // 开启多进程
+    }),
+]
+...
 ```

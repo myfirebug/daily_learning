@@ -1,6 +1,9 @@
+const os = require("os");
 const ESLintPlugin = require("eslint-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
+// cpu核数
+const threads = os.cpus().length;
 const assetPath = "../";
 module.exports = {
   // 入口相对路由
@@ -59,6 +62,21 @@ module.exports = {
           {
             test: /\.js$/,
             exclude: /node_modules/, // 排除node_modules中的js文件
+            use: [
+              {
+                loader: "thread-loader",
+                options: {
+                  works: threads, // 进程数据
+                },
+              },
+              {
+                loader: "babel-loader",
+                options: {
+                  cacheDirectory: true, // 开启babel缓存
+                  cacheCompression: false, // 关闭缓存文件压缩
+                },
+              },
+            ],
           },
         ],
       },
@@ -69,6 +87,7 @@ module.exports = {
     new ESLintPlugin({
       exclude: "node_modules",
       context: path.resolve(__dirname, assetPath + "src"),
+      threads, // 开启多进程
     }),
     new HtmlWebpackPlugin({
       // 模板：以public/index.html文件创建新的html文件
