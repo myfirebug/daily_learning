@@ -1,0 +1,16 @@
+{
+  "name": "day012",
+  "version": "1.0.0",
+  "description": "打包代码时会将所有 js 文件打包到一个文件，体积太大，我们如果只渲染首页，就应该只加载首页的 js 文件，其他文件不应该加载；",
+  "main": "webpack.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "html-webpack-plugin": "^5.5.3",
+    "webpack": "^5.88.1",
+    "webpack-cli": "^5.1.4"
+  }
+}

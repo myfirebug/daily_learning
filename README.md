@@ -9,3 +9,5 @@
 - [开发服务器&自动化](./day007/README.md)
 - [提取样式，样式兼容性，压缩样式](./day008/README.md)
 - [提升开发体验](./day009/README.md)
+- [提升打包构建速度](./day010/README.md)
+- [减少代码体积](./day011/README.md)
