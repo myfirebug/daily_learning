@@ -11,3 +11,5 @@
 - [提升开发体验](./day009/README.md)
 - [提升打包构建速度](./day010/README.md)
 - [减少代码体积](./day011/README.md)
+- [优化代码运行性能 1](./day012/README.md)
+- [优化代码运行性能 2](./day013/README.md)
