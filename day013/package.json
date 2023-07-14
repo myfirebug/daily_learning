@@ -26,11 +26,15 @@
     "thread-loader": "^4.0.2",
     "webpack": "^5.83.1",
     "webpack-cli": "^5.1.1",
-    "webpack-dev-server": "^4.15.0"
+    "webpack-dev-server": "^4.15.0",
+    "workbox-webpack-plugin": "^7.0.0"
   },
   "browserslist": [
     "last 2 versions",
     "> 1%",
     "not dead"
-  ]
+  ],
+  "dependencies": {
+    "core-js": "^3.31.1"
+  }
 }

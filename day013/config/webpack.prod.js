@@ -5,6 +5,7 @@ const ESLintPlugin = require("eslint-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const WorkboxPlugin = require("workbox-webpack-plugin");
 const path = require("path");
 const { tools } = require("./utils");
 const assetPath = "../";
@@ -22,9 +23,9 @@ module.exports = {
     // __dirname nodejs的变量，代表当前文件的文件夹目录（day002文件夹）
     path: path.resolve(__dirname, assetPath + "dist"),
     // 入口打包输出的文件名
-    filename: "static/js/[name].js",
+    filename: "static/js/[name][hash:6].js",
     // chunk文件名称
-    chunkFilename: "static/js/[name].chunk.js",
+    chunkFilename: "static/js/[name][hash:6].chunk.js",
     // 图片，字体，通过type：asset处理的资源全名方式
     assetModuleFilename: "static/media/[hash:6][ext][query]",
     // 打包前将path的整个目录内容清空，在进行打包
@@ -99,9 +100,7 @@ module.exports = {
       chunks: "all",
     },
     runtimeChunk: {
-      runtimeChunk: {
-        name: (entrypoint) => `runtime~${entrypoint.name}`,
-      },
+      name: (entrypoint) => `runtime~${entrypoint.name}`,
     },
   },
   // 插件
@@ -118,8 +117,14 @@ module.exports = {
       template: path.resolve(__dirname, assetPath + "public/index.html"),
     }),
     new MiniCssExtractPlugin({
-      filename: "static/css/[name].css",
-      chunkFilename: "static/css/[name].chunk.css",
+      filename: "static/css/[name][hash:6].css",
+      chunkFilename: "static/css/[name][hash:6].chunk.css",
+    }),
+    new WorkboxPlugin.GenerateSW({
+      // 这些选项帮助快速启用 ServiceWorkers
+      // 不允许遗留任何“旧的” ServiceWorkers
+      clientsClaim: true,
+      skipWaiting: true,
     }),
   ],
   // 模式
