@@ -91,3 +91,58 @@ Fiber 树可以被中断和恢复，这意味着在执行 Fiber 树的 diff 过�
 2. 可组合性：组件应该是可组合的，可以与其他组件一起使用。这样可以构建更大的组件和应用程序。
 3. 数据流动：组件之间的数据流动应该是单向的，从你组件到子组件。可以更好的追踪数据的变化和调试问题。
 4. 分层架构：将组件按照层次结构进行组织，从而理好地分离业务逻辑和技术实现。
+
+### Context 是什么，如何应⽤？
+
+Context 提供了⼀个⽆需为每层组件⼿动添加 props，就能在组件树间进⾏数据传递
+的⽅法。如⼀些简单的公共信息：主题⾊，语⾔等。复杂的公共信息，请⽤ redux
+
+上下文由两个主要组件组成：
+
+1. React.createContext: 该函数用于创建上下文对象。它接受一个初始值作为参数，并把一个上下文对象如：
+
+```jsx
+import { createContext } from "react";
+export const LevelContext = createContext(1);
+```
+
+2. provider 组件: 该组件用于净数据传递给后代组件，通过 provider 组件的 value 属性，可以将数据传递给下层组件如：
+
+```jsx
+import { LevelContext } from "./LevelContext.js";
+
+export default function Section({ level, children }) {
+  return (
+    <section className="section">
+      <LevelContext.Provider value={level}>{children}</LevelContext.Provider>
+    </section>
+  );
+}
+```
+
+3. 使用 useContent 钩子：
+
+```jsx
+import { useContext } from "react";
+import { LevelContext } from "./LevelContext.js";
+
+export default function Heading({ children }) {
+  const level = useContext(LevelContext);
+  switch (level) {
+    case 1:
+      return <h1>{children}</h1>;
+    case 2:
+      return <h2>{children}</h2>;
+    case 3:
+      return <h3>{children}</h3>;
+    case 4:
+      return <h4>{children}</h4>;
+    case 5:
+      return <h5>{children}</h5>;
+    case 6:
+      return <h6>{children}</h6>;
+    default:
+      throw Error("未知的 level：" + level);
+  }
+}
+```
