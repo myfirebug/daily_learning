@@ -99,7 +99,7 @@ Context 提供了⼀个⽆需为每层组件⼿动添加 props，就能在组件
 
 上下文由两个主要组件组成：
 
-1. React.createContext: 该函数用于创建上下文对象。它接受一个初始值作为参数，并把一个上下文对象如：
+1. React.createContext: 该函数用于创建上下文对象。它接受一个初始值作为参数，并返回一个上下文对象如：
 
 ```jsx
 import { createContext } from "react";
@@ -146,3 +146,84 @@ export default function Heading({ children }) {
   }
 }
 ```
+
+### React 中 ref 的作⽤是什么？
+
+React 中的 ref 提供了⼀种⽅式，允许我们访问 DOM 节点或在 render ⽅法中创建的 React 组件；
+
+1. 访问组件实例：通过 ref 可以获取到组件的实例，从而可以直接调用组件的方法或访问组件的属性。这在某些情况下非常有用，例如需要手动触发组件的某个方法或获取组件的状态。
+2. 访问 dom 元素：通过 ref 可以获取到 React 组件中的 dom 元素，从而可以直接操作 dom，例如改变样式、获取输入框的值等。这在需要直接操作 dom 的场景下非常有用，但在 react 中应该尽量避免直接操作 dom，而是通过状态和属性来控制组件的渲染。
+
+### setState 是同步还是异步?
+
+setState 本身⽆所谓异步还是同步（看是否能命中 batchUpdate 机制，判断 isBatchUpdates），但在特殊环境（setTimeout、setInterval 等 DOM 原⽣事件）他是同步的，有时会合并（对象形式），有时不合并（函数形式）
+那些能命中 batchUpdate 机制？
+⽣命周期（和调⽤的函数）、react 中注册的事件（和它调⽤的函数）、react 可以“管理”的⼊⼝
+
+```
+<pre>
+- +---------------------------+
+- | this.setState(newState) |
+- +-------------|-------------+
+- v
+- +---------------------------+
+- | newState 存⼊ padding 中 |
+- +-------------|-------------+
+- v
+- +---------------------------+
+- +--| 是否处于batch update |--+
+- Y +---------------------------+ N
+- v v
+- +---------------------------+
++----------------------------------------------------------------
+------+
+- | 保存到 dirtyComponents | |遍历所有的
+dirtyComponents，调⽤updateComponent，更新pending，state，props|
+- +---------------------------+
++----------------------------------------------------------------
+------+
+- </pre>
+```
+
+setState 接收⼀个新的状态
+该接收到的新状态不会被⽴即执⾏，⽽是存⼊到 pending（等待队列）中
+判断 isBatchingUpdates（是否是批量更新模式）
+1>. isBatchingUpdates: true 将接收到的新状态保存到 dirtyComponents(脏组件)
+中
+2>. isBatchingUpdates: false 遍历所有的 dirtyComponents， 并且调⽤其
+updateComponent ⽅法更新 pending 中的 state 或者 props。
+
+```
+- <pre>
+- wrappers (injected at creation time)
+- + +
+- | |
+- +-----------------|--------|--------------+
+- | v | |
+- | +---------------+ | |
+- | +--| wrapper1 |---|----+ |
+- | | +---------------+ v | |
+- | | +-------------+ | |
+- | | +----| wrapper2 |--------+ |
+- | | | +-------------+ | | |
+- | | | | | |
+- | v v v v |
+wrapper
+- | +---+ +---+ +---------+ +---+ +---+ |
+invariants
+- perform(anyMethod) | | | | | | | | | | | | maintained
+- +----------------->|-|---|-|---|-->|
+anyMethod|---|---|-|---|-|-------->
+- | | | | | | | | | | | |
+- | | | | | | | | | | | |
+- | | | | | | | | | | | |
+- | +---+ +---+ +---------+ +---+ +---+ |
+- | initialize close |
+- +-----------------------------------------+
+- </pre>
+```
+
+Transaction 事务机制
+Transaction 会接受⼀个⽅法 func，和⼀组 Wrapper。Transaction 会在 func 执⾏
+之前，执⾏⼀组 Wrapper 中的 initialize ⽅法。⽽后执⾏ func ⽅法，在 func ⽅法执⾏
+完了之后，执⾏ Wrapper 提供的所有 close ⽅法
