@@ -154,76 +154,30 @@ React 中的 ref 提供了⼀种⽅式，允许我们访问 DOM 节点或在 ren
 1. 访问组件实例：通过 ref 可以获取到组件的实例，从而可以直接调用组件的方法或访问组件的属性。这在某些情况下非常有用，例如需要手动触发组件的某个方法或获取组件的状态。
 2. 访问 dom 元素：通过 ref 可以获取到 React 组件中的 dom 元素，从而可以直接操作 dom，例如改变样式、获取输入框的值等。这在需要直接操作 dom 的场景下非常有用，但在 react 中应该尽量避免直接操作 dom，而是通过状态和属性来控制组件的渲染。
 
-### setState 是同步还是异步?
+### jsx 本质是什么?
 
-setState 本身⽆所谓异步还是同步（看是否能命中 batchUpdate 机制，判断 isBatchUpdates），但在特殊环境（setTimeout、setInterval 等 DOM 原⽣事件）他是同步的，有时会合并（对象形式），有时不合并（函数形式）
-那些能命中 batchUpdate 机制？
-⽣命周期（和调⽤的函数）、react 中注册的事件（和它调⽤的函数）、react 可以“管理”的⼊⼝
+JSX 本质其实是⼀个函数（React.createElement)React.createElement 有三个参数，第⼀个参数是 type 也就是标签或者组件名、第⼆个参数是 props 是标签属性（例如 id、class、样式或者向⼦组件传递的数据等）、第三个参数是 children 是标签或者组件内的内容。执⾏返回 vnode
 
-```
-<pre>
-- +---------------------------+
-- | this.setState(newState) |
-- +-------------|-------------+
-- v
-- +---------------------------+
-- | newState 存⼊ padding 中 |
-- +-------------|-------------+
-- v
-- +---------------------------+
-- +--| 是否处于batch update |--+
-- Y +---------------------------+ N
-- v v
-- +---------------------------+
-+----------------------------------------------------------------
-------+
-- | 保存到 dirtyComponents | |遍历所有的
-dirtyComponents，调⽤updateComponent，更新pending，state，props|
-- +---------------------------+
-+----------------------------------------------------------------
-------+
-- </pre>
-```
+### 聊聊 react 的⽣命周期函数？
 
-setState 接收⼀个新的状态
-该接收到的新状态不会被⽴即执⾏，⽽是存⼊到 pending（等待队列）中
-判断 isBatchingUpdates（是否是批量更新模式）
-1>. isBatchingUpdates: true 将接收到的新状态保存到 dirtyComponents(脏组件)
-中
-2>. isBatchingUpdates: false 遍历所有的 dirtyComponents， 并且调⽤其
-updateComponent ⽅法更新 pending 中的 state 或者 props。
+[生命周期图](https://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/)
 
-```
-- <pre>
-- wrappers (injected at creation time)
-- + +
-- | |
-- +-----------------|--------|--------------+
-- | v | |
-- | +---------------+ | |
-- | +--| wrapper1 |---|----+ |
-- | | +---------------+ v | |
-- | | +-------------+ | |
-- | | +----| wrapper2 |--------+ |
-- | | | +-------------+ | | |
-- | | | | | |
-- | v v v v |
-wrapper
-- | +---+ +---+ +---------+ +---+ +---+ |
-invariants
-- perform(anyMethod) | | | | | | | | | | | | maintained
-- +----------------->|-|---|-|---|-->|
-anyMethod|---|---|-|---|-|-------->
-- | | | | | | | | | | | |
-- | | | | | | | | | | | |
-- | | | | | | | | | | | |
-- | +---+ +---+ +---------+ +---+ +---+ |
-- | initialize close |
-- +-----------------------------------------+
-- </pre>
-```
-
-Transaction 事务机制
-Transaction 会接受⼀个⽅法 func，和⼀组 Wrapper。Transaction 会在 func 执⾏
-之前，执⾏⼀组 Wrapper 中的 initialize ⽅法。⽽后执⾏ func ⽅法，在 func ⽅法执⾏
-完了之后，执⾏ Wrapper 提供的所有 close ⽅法
+⽣命周期是⼀个抽象的概念  
+挂载->更新->卸载这⼀ react 组件完整流程，才是⽣命周期  
+挂载阶段  
+概念：组建从初始化到完成加载的过程  
+constructor:是类通⽤的构造函数，常⽤于初始化  
+getDerivedStateFromProps：使组件在 prop 变化时更新 state (当 props 被传⼊时，state 发⽣变化时，forceUpdate 被调⽤时)  
+renter:返回 jsx 结构，⽤于描述具体的渲染内容  
+React updates DOM && refs  
+componentDidMount：主要⽤于组件加载完成时做某些操作  
+更新阶段：  
+概念：指外部 props 传⼊，或 state 发⽣变化时的阶段  
+getDerivedStateFromProps  
+shouldComponentUpdate: 通过返回 true,false 来判断是否触发新的渲染；  
+render  
+getSnapshotBeforeUpdate: 返回值会作为 componentDidUpdate 的第三个参数使⽤
+React updates DOM && refs  
+componentDidUpdate
+卸载阶段：  
+componentWillUnmount:主要⽤于执⾏清理⼯作
